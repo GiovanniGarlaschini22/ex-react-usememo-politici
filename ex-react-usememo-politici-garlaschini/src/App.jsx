@@ -41,8 +41,31 @@ Aggiungi un console.log() dentro il componente Card per verificare che venga ren
 Obiettivo: Se la lista filtrata cambia, solo le nuove card devono essere renderizzate, mentre le altre rimangono in memoria senza essere ridisegnate.
 */
 
-import React, {useState, useEffect, useMemo} from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import './App.css'
+
+const PoliticianCard = React.memo(({ politician }) => {
+  console.log(`Rendering card for ${politician.name}`);
+
+  return (
+    <div className="politician-card">
+      <h3 className="politician-name">{politician.name}</h3>
+      <img
+        src={politician.image}
+        alt={politician.name}
+        className="politician-image"
+      />
+      <p className="politician-info">
+        <span className="politician-label">Position:</span> {politician.position}
+      </p>
+      <p className="politician-info">
+        <span className="politician-label">Biography:</span> {politician.biography}
+      </p>
+    </div>
+  );
+});
+
+PoliticianCard.displayName = 'PoliticianCard';
 
 function Politicians() {
 
@@ -54,7 +77,7 @@ function Politicians() {
   }, [politicians]);
 
   const filteredPoliticians = useMemo(() => {
-    if(!searchTerm.trim()) {
+    if (!searchTerm.trim()) {
       return politicians;
     }
     return politicians.filter(politician => politician.name.toLowerCase().includes(searchTerm.toLowerCase()) || politician.biography.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -79,21 +102,11 @@ function Politicians() {
           className='search-input'
         />
         <div className="politicians-grid">
-          {filteredPoliticians.map((politician, index) => (
-            <div key={politician.id || index} className="politician-card">
-              <h3 className="politician-name">{politician.name}</h3>
-              <img 
-                src={politician.image} 
-                alt={politician.name} 
-                className="politician-image"
-              />
-              <p className="politician-info">
-                <span className="politician-label">Position:</span> {politician.position}
-              </p>
-              <p className="politician-info">
-                <span className="politician-label">Biography:</span> {politician.biography}
-              </p>
-            </div>
+          {filteredPoliticians.map((politician) => (
+            <PoliticianCard
+              key={politician.id || politician.name}
+              politician={politician}
+            />
           ))};
         </div>
       </div>
