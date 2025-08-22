@@ -47,10 +47,18 @@ import './App.css'
 function Politicians() {
 
   const [politicians, setPoliticians] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const totalToPay = useMemo(() => {
     return politicians.length * 1000;
   }, [politicians]);
+
+  const filteredPoliticians = useMemo(() => {
+    if(!searchTerm.trim()) {
+      return politicians;
+    }
+    return politicians.filter(politician => politician.name.toLowerCase().includes(searchTerm.toLowerCase()) || politician.biography.toLowerCase().includes(searchTerm.toLowerCase()));
+  }, [politicians, searchTerm]);
 
   useEffect(() => {
     fetch('http://localhost:3333/politicians')
@@ -63,8 +71,15 @@ function Politicians() {
     <>
       <div>
         <h1 className="page-title">Politicians</h1>
+        <input
+          type="text"
+          placeholder="Find for name or Biography"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className='search-input'
+        />
         <div className="politicians-grid">
-          {politicians.map((politician, index) => (
+          {filteredPoliticians.map((politician, index) => (
             <div key={politician.id || index} className="politician-card">
               <h3 className="politician-name">{politician.name}</h3>
               <img 
@@ -79,7 +94,7 @@ function Politicians() {
                 <span className="politician-label">Biography:</span> {politician.biography}
               </p>
             </div>
-          ))}
+          ))};
         </div>
       </div>
     </>
